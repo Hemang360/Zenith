@@ -5,10 +5,10 @@ import User from "@/models/User";
 export async function GET() {
   try {
     await dbConnect();
-    const users = await User.find({}).select('-__v');
+    const users = await User.find({ role: { $ne: 'admin' } }).select('-__v');
     const formattedUsers = users.map(user => ({
-      id: user._id.toString(),
-      uid: user.uid,
+      id: user._id ? user._id.toString() : null,
+      uid: user.uid || null,
       name: user.name,
       email: user.email,
       phone: user.phone || null,
