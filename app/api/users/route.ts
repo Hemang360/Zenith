@@ -1,36 +1,35 @@
-// add mongodb imports
 import { NextResponse } from "next/server";
+import dbConnect from "@/lib/db";
+import User from "@/models/User";
 
 export async function GET() {
   try {
-    // TODO: Replace with MongoDB User collection query
-    // const users = await User.find({}).select('-password'); // Exclude sensitive fields
-    // return NextResponse.json({ users, status: "success" });    
-    interface User {
-      uid: string;
-      name: string;
-      email: string;
-      phone: string;
-      resume_link: string;
-      college_name: string | null;
-      bio: string | null;
-      age: number | null;
-      profile_picture: string | null;
-      leetcode_profile: string | null;
-      github_link: string | null;
-      linkedin_link: string | null;
-      competitive_profile: string | null;
-      ctf_profile: string | null;
-      kaggle_link: string | null;
-      devfolio_link: string | null;
-      portfolio_link: string | null;
-      status: string;
-    }
-    
-    // Return empty array until MongoDB is implemented
-    const users: User[] = [];
+    await dbConnect();
+    const users = await User.find({}).select('-__v');
+    const formattedUsers = users.map(user => ({
+      id: user._id.toString(),
+      uid: user.uid,
+      name: user.name,
+      email: user.email,
+      phone: user.phone || null,
+      resume_link: user.resume_link || null,
+      profile_picture: user.profile_picture || null,
+      leetcode_profile: user.leetcode_profile || null,
+      github_link: user.github_link || null,
+      linkedin_link: user.linkedin_link || null,
+      codeforces_link: user.codeforces_link || null,
+      kaggle_link: user.kaggle_link || null,
+      devfolio_link: user.devfolio_link || null,
+      portfolio_link: user.portfolio_link || null,
+      ctf_profile: user.ctf_profile || null,
+      bio: user.bio || null,
+      age: user.age || null,
+      organisation: user.organisation || null,
+      role: user.role,
+      isLooking: user.isLooking
+    }));
 
-    return NextResponse.json({ users, status: "success" });
+    return NextResponse.json({ users: formattedUsers, status: "success" });
   } catch (error) {
     console.error("Error fetching users:", error);
     return NextResponse.json(
