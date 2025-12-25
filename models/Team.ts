@@ -1,13 +1,13 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import mongoose, { Schema, Document, Model, Types } from 'mongoose';
 
 export interface ITeam extends Document {
     teamCode: string;
-    teamLead: string;
-    islooking: boolean;
-    teamMembers: string[];
+    teamLead: Types.ObjectId;
+    isLooking: boolean;
+    teamMembers: Types.ObjectId[];
     teamStatus: 'submitted' | 'pending' | 'withdrawn';
     RSVP: boolean;
-    appliedFor: string;
+    appliedFor?: Types.ObjectId;
     isEvaluated: boolean;
     scores?: {
         tech: number;
@@ -21,16 +21,16 @@ export interface ITeam extends Document {
 
 const TeamSchema: Schema = new Schema({
     teamCode: { type: String, required: true, unique: true },
-    teamLead: { type: String, required: true }, // Store Firebase UID
-    islooking: { type: Boolean, default: true },
-    teamMembers: [{ type: String }],
+    teamLead: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+    isLooking: { type: Boolean, default: true },
+    teamMembers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     teamStatus: {
         type: String,
         enum: ['submitted', 'pending', 'withdrawn'],
         default: 'pending'
     },
     RSVP: { type: Boolean, default: false },
-    appliedFor: { type: String },
+    appliedFor: { type: Schema.Types.ObjectId, ref: 'ProblemStatement' },
     isEvaluated: { type: Boolean, default: false },
     scores: {
         tech: { type: Number },
